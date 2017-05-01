@@ -3,159 +3,128 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+// The JUCE LookAndFeel class alows the engineer to modify elements of the GUI
+// OtherLookAndFeel is an edited copy of the original LookAndFeel class
+// that replaces elements of the GUI with external .png images
 class OtherLookAndFeel : public LookAndFeel_V2
 {
 public:
 	OtherLookAndFeel()
 	{
-
 	}
 
+	// This function modifies the Slider Class
 	void drawLinearSlider(Graphics& g, //Graphics& a,
 			int x, int y, int w, int h,
 			float sliderPos, float minSliderPos, float maxSliderPos,
 			const Slider::SliderStyle style,
 			Slider& slider)
 		{
-			g.fillAll(slider.findColour(Slider::backgroundColourId));
-
-			if (style == Slider::LinearVertical)
-			{
-
-				Image myStrip;
+				// Image variables
+				Image faderKnob;
 				Image onMeter;
 				Image offmeter;
 
-				myStrip = ImageCache::getFromMemory(BinaryData::cap_png, BinaryData::cap_pngSize);
+				// Retrieve .pnf files from the project and convert to Image Class
+				faderKnob = ImageCache::getFromMemory(BinaryData::cap_png, BinaryData::cap_pngSize);
 				onMeter = ImageCache::getFromMemory(BinaryData::on_png, BinaryData::on_pngSize);
 				offmeter= ImageCache::getFromMemory(BinaryData::off_png, BinaryData::off_pngSize);
-
-				Rectangle<int> area = onMeter.getBounds();
-				//area.setHeight(onMeter.getHeight()/2);
-				area.setHeight((int)(onMeter.getHeight()*(sliderPos / maxSliderPos)));
-				double perc = sliderPos / maxSliderPos;
-				int watchArea = (int)(onMeter.getHeight()*(sliderPos / maxSliderPos));
-				area.setPosition(0, 0);
-				
-				const double fractRotation = (slider.getValue() - slider.getMinimum()) / (slider.getMaximum() - slider.getMinimum()); //value between 0 and 1 for current amount of rotation
-				const int nFrames = myStrip.getHeight() / myStrip.getWidth(); // number of frames for vertical film strip
-				const int frameIdx = (int)ceil(fractRotation * ((double)nFrames - 1.0)); // current index from 0 --&gt; nFrames-1
-
-				const float radius = jmin(w / 2.0f, h / 2.0f);
-				const float centreX = x + w * 0.5f;
-				const float centreY = y + h * 0.5f;
-				const float rx = centreX - radius - 1.0f;
-				const float ry = centreY - radius /* - 1.0f*/;
-				
-				int frIDxWid = frameIdx*myStrip.getWidth();
-				int watch = (int)(myStrip.getHeight() - myStrip.getHeight()*(sliderPos / maxSliderPos));
-				g.drawImage(myStrip, // image    
-					//slider.getWidth()/2 - myStrip.getWidth()/3.3, sliderPos- myStrip.getHeight()/2, myStrip.getWidth(), myStrip.getHeight(),   // dest
-					myStrip.getWidth()/2 - onMeter.getWidth(), sliderPos - myStrip.getHeight() / 2, myStrip.getWidth()*2, myStrip.getHeight(),
-					0, 0, myStrip.getHeight(), myStrip.getHeight()); // source
+			
+				// Set the fader knob and meter dimensions and positions
+				g.drawImage(faderKnob, // image    
+					faderKnob.getWidth() / 2 - onMeter.getWidth(), sliderPos - faderKnob.getHeight() / 2, faderKnob.getWidth() * 2, faderKnob.getHeight(), //dest
+					0, 0, faderKnob.getHeight(), faderKnob.getHeight()); // source
 				g.drawImage(offmeter, // image    
 					slider.getWidth() - onMeter.getWidth(), slider.getHeight() - minSliderPos, onMeter.getWidth(), slider.getHeight()*0.95,   // dest
 					0, 0, onMeter.getWidth(), onMeter.getHeight()); // source
+				
+				// Reveals or excludes meter-on image
 				exclude(g, onMeter, sliderPos, maxSliderPos, minSliderPos, slider);
+				
+				// Draw slider text
 				g.drawFittedText(slider.getTextValueSuffix(),
 					5, -20,
 					slider.getWidth(), slider.getHeight(),
 					Justification::centredTop, 10);
-				
-
-			}
-
-		}
+	}
+	// This function creates an image and then excludes certain regions of the image 
+	// from being displayed
 	void exclude(Graphics& a, Image onMeter, float sliderPos, float maxSliderPos, float minSliderPos, Slider& slider)
 	{
+		// Set area to be excluded
+		int widthExtend = 10;
 		Rectangle<int> area = onMeter.getBounds();
-		//area.setHeight((int)(onMeter.getHeight()*(sliderPos / maxSliderPos)));
 		area.setHeight((int)(sliderPos));
-		area.setWidth(slider.getWidth()+ 10);
+		area.setWidth(slider.getWidth() + widthExtend);
 		area.setPosition(slider.getWidth() - onMeter.getWidth()-5, 0);
+		
+		// Exclude area of image and draw remaining section
 		a.excludeClipRegion(area);
 		a.drawImage(onMeter, // image    
 			slider.getWidth() - onMeter.getWidth(), slider.getHeight() - minSliderPos, onMeter.getWidth(), slider.getHeight()*0.95,   // dest
 			0, 0, onMeter.getWidth(), onMeter.getHeight()); // source
 	}
 
-	void drawTickBox(Graphics& g, Component& component,
+	// Function modified from TickBox to create toggled On/Off Mute Button
+	void drawMuteOn(Graphics& g, Component& component,
 		float x, float y, float w, float h,
 		const bool ticked,
 		const bool isEnabled,
 		const bool isMouseOverButton,
 		const bool isButtonDown)
 	{
-		const float boxSize = w * 0.7f;
 
-		Image muteNormal;
+		// Define and retreive Mute Off Image
+		Image muteOff;
+		muteOff = ImageCache::getFromMemory(BinaryData::normal2x_png, BinaryData::normal2x_pngSize);
 
-		muteNormal = ImageCache::getFromMemory(BinaryData::normal2x_png, BinaryData::normal2x_pngSize);
+		g.drawImage(muteOff, // image    
+			0, 0, muteOff.getWidth(), muteOff.getHeight(),   // dest
+			0, 0, muteOff.getHeight(), muteOff.getHeight()); // source
 
-		g.drawImage(muteNormal, // image    
-			0, 0, muteNormal.getWidth(), muteNormal.getHeight(),   // dest
-			0, 0, muteNormal.getHeight(), muteNormal.getHeight()); // source
-
+		// If button is selected draw muteSelected Image
 		if (ticked)
 		{
-
 			Image muteSelected;
-
 			muteSelected = ImageCache::getFromMemory(BinaryData::selected2x_png, BinaryData::selected2x_pngSize);
-
 			g.drawImage(muteSelected, // image    
 				0, 0, muteSelected.getWidth(), muteSelected.getHeight(),   // dest
 				0, 0, muteSelected.getHeight(), muteSelected.getHeight()); // source
-			Tick = true;
 		}
-		else{
-		Tick = false;
-		}
+
 	}
 
-		void drawToggleButton(Graphics& g, ToggleButton& button,
+	// Function modified from Toggle button to draw the Mute button
+	void drawToggleButton(Graphics& g, ToggleButton& button,
 			bool isMouseOverButton, bool isButtonDown)
 		{
-			if (button.hasKeyboardFocus(true))
-			{
-				//g.setColour(button.findColour(TextEditor::focusedOutlineColourId));
-				//g.drawRect(0, 0, button.getWidth(), button.getHeight());
-			}
-
-			float fontSize = jmin(15.0f, button.getHeight() * 0.75f);
-			const float tickWidth = fontSize * 1.1f;
-			const int textX = (int)tickWidth + 5;
-			
-			drawTickBox(g, button, 4.0f, (button.getHeight() - tickWidth) * 0.5f,
-				tickWidth, tickWidth,
+			// Draw eitehr selected or deselected button
+			drawMuteOn(g, button, 0, 0,
+				button.getWidth(), button.getHeight(),
 				button.getToggleState(),
 				button.isEnabled(),
 				isMouseOverButton,
 				isButtonDown);
+
+			// Draw text
 			g.setColour(Colours::black);
 			g.setFont(15.0);
 			g.drawFittedText(button.getButtonText(),
 				5, 7,
 				button.getWidth(), button.getHeight(),
-				Justification::centredTop, 10);
-			
-
+				Justification::centredTop, 10);		
 		}
-private:
-	bool Tick = false;
-	
-
 };
+
 
 class MainContentComponent   : public Component
 {
 public:
     MainContentComponent()
     {
-		
-		
+		// Set slider values and make visible
 		slider.setSliderStyle(Slider::LinearVertical);
-		slider.setTextBoxStyle(Slider::TextBoxAbove, false, 0, 0);
+		slider.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 		slider.setTextValueSuffix("1");
 		addAndMakeVisible(slider);
         
@@ -164,11 +133,14 @@ public:
 		slider.setTextValueSuffix("2");
 		addAndMakeVisible(slider2);
 
+		// Set custom LookAndFeel
 		slider.setLookAndFeel(&otherLookAndFeel);
 		slider2.setLookAndFeel(&otherLookAndFeel);
 
 		slider.setAlwaysOnTop(true);
+		slider2.setAlwaysOnTop(true);
 		
+		// Set Button Values and maje Visible
 		Mute.setButtonText("MUTE");
 		addAndMakeVisible(Mute);
 		Mute.setLookAndFeel(&otherLookAndFeel);
@@ -177,9 +149,8 @@ public:
 		addAndMakeVisible(Mute2);
 		Mute2.setLookAndFeel(&otherLookAndFeel);
 
+		// Set window size
         setSize (250, 750);
-
-		//muteButton = ImageCache::getFromMemory(BinaryData::normal2x_png, BinaryData::normal2x_pngSize);
 
     }
     
@@ -189,18 +160,20 @@ public:
 
 	void paint(Graphics& g) override
 	{
+		// x and y coordinates, line thickness and font size
+		int lineX = fader.getWidth() / 2 - meter.getWidth() + fader.getWidth() + 1;
+		int lineYTop = Channel.getY() * 2 + 10 + chanNum;
+		int lineYBot = slider.getHeight() + chanNum;
+		int fontSize = 30, lineOffset = 10;
+		float lineThick = 2.0F;
+		float borerThick = 1.0F;
 
-
-	
-		g.setColour(Colours::black);
+		// All Background images including Background and channel strip are set here
 		g.setColour(Colours::darkslategrey);
 		g.fillRect(Channel);
 		g.fillRect(Channel2);
-
-		
-		
-		g.drawRect(Channel, 1.0F);
-		g.drawRect(Channel2, 1.0F);
+		g.drawRect(Channel, borerThick);
+		g.drawRect(Channel2, borerThick);
 		g.setColour(Colours::dimgrey);
 		g.fillRect(faderStrip);
 		g.fillRect(faderStrip2);
@@ -208,58 +181,64 @@ public:
 		g.fillRect(muteBack);
 		g.fillRect(muteBack2);
 		g.setColour(Colours::black);
-		g.drawLine(fader.getWidth() / 2 - meter.getWidth() + fader.getWidth() + 1, Channel.getY() * 2 + 10 + chanNum, fader.getWidth() / 2 - meter.getWidth() + fader.getWidth() + 1, slider.getHeight() + chanNum, 2.0F);// Vertical
-		g.drawLine(fader.getWidth() / 2 - meter.getWidth() + fader.getWidth() + 1 + Channel.getWidth() + 10, Channel.getY() * 2 + 10 + chanNum, fader.getWidth() / 2 - meter.getWidth() + fader.getWidth() + 1 + Channel.getWidth() + 10, slider.getHeight(), 2.0F);// Vertical
-		g.drawRect(faderStrip, 1.0F);
-		g.drawRect(muteBack, 1.0F);
-		g.drawRect(Channel, 1.0F);
-		g.drawRect(faderStrip2, 1.0F);
-		g.drawRect(muteBack2, 1.0F);
-		g.drawRect(Channel2, 1.0F);
-		g.setFont(30);
+		g.drawLine(lineX, lineYTop, lineX, lineYBot, lineThick);
+		g.drawLine(lineX + Channel.getWidth() + lineOffset, lineYTop, lineX + Channel.getWidth() + lineOffset, lineYBot, lineThick);
+		g.drawRect(faderStrip, borerThick);
+		g.drawRect(muteBack, borerThick);
+		g.drawRect(Channel, borerThick);
+		g.drawRect(faderStrip2, borerThick);
+		g.drawRect(muteBack2, borerThick);
+		g.drawRect(Channel2, borerThick);
+		g.setFont(fontSize);
 		g.drawText("1", Channel, Justification::centredTop);
 		g.drawText("2", Channel2, Justification::centredTop);
-		//}
+
     }
     
     void resized() override
     {
-        //const int border = 10;
-		
+		// Load images, used for dimensions
 		muteButton = ImageCache::getFromMemory(BinaryData::normal2x_png, BinaryData::normal2x_pngSize);
 		fader = ImageCache::getFromMemory(BinaryData::cap_png, BinaryData::cap_pngSize);
 		meter = ImageCache::getFromMemory(BinaryData::on_png, BinaryData::on_pngSize);
+		
+		// Calculate area in which to place Sliders and Buttons
 		Rectangle<int> area;
 		Rectangle<int> areaButton = muteButton.getBounds();
-		//chanNum = 30;
-		int channelHeight = meter.getHeight()+muteButton.getHeight();
-		int channelWidth = muteButton.getWidth()*0.8;
-		Channel.setHeight(channelHeight + border * 2 + chanNum);
-		Channel.setWidth(channelWidth+border*2);
+		int channelBaseHeight = meter.getHeight()+muteButton.getHeight();
+		int channelBaseWidth = muteButton.getWidth()*0.8;
+		Channel.setHeight(channelBaseHeight + border * 2 + chanNum);
+		Channel.setWidth(channelBaseWidth + border * 2);
 
-		Channel2.setHeight(channelHeight + border * 2 + chanNum);
-		Channel2.setWidth(channelWidth + border * 2);
+		Channel2.setHeight(channelBaseHeight + border * 2 + chanNum);
+		Channel2.setWidth(channelBaseWidth + border * 2);
 
 		Channel.setPosition(border, border);
 		Channel2.setPosition(border*2 + Channel.getWidth(), border);
 
+		// Set sizes inclduing borders and adjustments
+		int channelX = Channel.getX() + border;
+		int channelY = Channel.getY() + border + chanNum;
+		int channelWid = Channel.getWidth() + border;
+		int channelHei = Channel.getWidth() + border;
+		int MuteWid = muteButton.getWidth()*0.8;
+		int MuteHei = muteButton.getHeight()*0.8;
+		int halfBorder = border / 2, borderExt = border*1.5;
 
-		area.setHeight(channelHeight);
+		// Place Sliders and Buttons, added X adjustments for second channel strip
+		area.setHeight(channelBaseHeight);
 		area.setWidth(muteButton.getWidth()+border);
-			Rectangle<int> dialArea = area.removeFromTop(meter.getHeight());
-			slider.setBounds(Channel.getX() + border, Channel.getY() + border + chanNum, muteButton.getWidth()*0.8, meter.getHeight() + border);
-			slider2.setBounds((Channel.getX() + border) + Channel.getWidth() + border, Channel.getY() + border + chanNum, muteButton.getWidth()*0.8, meter.getHeight() + border);
+		slider.setBounds(channelX, channelY, MuteWid, meter.getHeight() + border);
+		slider2.setBounds(channelX + channelWid, Channel.getY() + border + chanNum, MuteWid, meter.getHeight() + border);
 
-			faderStrip.setBounds(slider.getX() - border / 2, slider.getY() - border / 2, slider.getWidth() + border, slider.getHeight() + border);
-			muteBack.setBounds(faderStrip.getX(), Channel.getY() + faderStrip.getHeight() + chanNum + border, faderStrip.getWidth(), Channel.getHeight() - chanNum - faderStrip.getHeight() - border*1.5);
+		faderStrip.setBounds(slider.getX() - halfBorder, slider.getY() - halfBorder, slider.getWidth() + border, slider.getHeight() + border);
+		muteBack.setBounds(faderStrip.getX(), channelY + faderStrip.getHeight(), faderStrip.getWidth(), Channel.getHeight() - chanNum - faderStrip.getHeight() - borderExt);
 		
-
-			faderStrip2.setBounds(slider.getX() - border / 2 + Channel.getWidth() + border, slider.getY() - border / 2, slider.getWidth() + border, slider.getHeight() + border);
-			muteBack2.setBounds(faderStrip.getX() + Channel.getWidth() + border, Channel2.getY() + faderStrip.getHeight() + border + chanNum, faderStrip.getWidth(), Channel.getHeight() - chanNum - faderStrip.getHeight() - border*1.5);
-        const int buttonHeight = 30;
-
-		Mute.setBounds(slider.getX() - border, muteBack.getY(), muteButton.getWidth()*0.8, muteButton.getHeight()*0.8);
-		Mute2.setBounds((slider.getX() - border) + Channel.getWidth() + border, muteBack.getY(), muteButton.getWidth()*0.8, muteButton.getHeight()*0.8);
+		faderStrip2.setBounds(slider.getX() - halfBorder + channelWid, slider.getY() - halfBorder, slider.getWidth() + border, slider.getHeight() + border);
+		muteBack2.setBounds(faderStrip.getX() + channelWid, channelY + faderStrip.getHeight(), faderStrip.getWidth(), Channel.getHeight() - chanNum - faderStrip.getHeight() - borderExt);
+        
+		Mute.setBounds(slider.getX() - border, muteBack.getY(), MuteWid, MuteHei);
+		Mute2.setBounds((slider.getX() - border) + Channel.getWidth() + border, muteBack.getY(), MuteWid, MuteHei);
 		
     }
 
@@ -273,19 +252,9 @@ private:
 	Rectangle<int> faderStrip, faderStrip2;
 	Rectangle<int> muteBack, muteBack2;
 	const int chanNum = 30, border = 10;
-	//LookAndFeel_V1_Custom otherLookAndFeelCustom;
-	//Graphics &g;
-	
-	
-	//Graphics& a;
-
-	
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };
-
-
-
 
 #endif  // MAINCOMPONENT_H_INCLUDED

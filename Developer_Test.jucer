@@ -8,13 +8,13 @@
       <FILE id="YmyToM" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
       <FILE id="zPjFuY" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
     </GROUP>
-    <FILE id="ZQrC9p" name="cap.png" compile="0" resource="1" file="cap.png"/>
-    <FILE id="KITVPL" name="highlighted-selected@2x.png" compile="0" resource="1"
-          file="highlighted-selected@2x.png"/>
-    <FILE id="zYRBGX" name="normal@2x.png" compile="0" resource="1" file="normal@2x.png"/>
-    <FILE id="x7IJl4" name="off.png" compile="0" resource="1" file="off.png"/>
-    <FILE id="Z9DZD5" name="on.png" compile="0" resource="1" file="on.png"/>
-    <FILE id="zpKSVI" name="selected@2x.png" compile="0" resource="1" file="selected@2x.png"/>
+    <FILE id="INZZal" name="cap.png" compile="0" resource="1" file="Images/cap.png"/>
+    <FILE id="N42ZrC" name="highlighted-selected@2x.png" compile="0" resource="1"
+          file="Images/highlighted-selected@2x.png"/>
+    <FILE id="odDCYA" name="normal@2x.png" compile="0" resource="1" file="Images/normal@2x.png"/>
+    <FILE id="FsUnPi" name="off.png" compile="0" resource="1" file="Images/off.png"/>
+    <FILE id="VKWZSz" name="on.png" compile="0" resource="1" file="Images/on.png"/>
+    <FILE id="JS6b9v" name="selected@2x.png" compile="0" resource="1" file="Images/selected@2x.png"/>
   </MAINGROUP>
   <EXPORTFORMATS>
     <VS2015 targetFolder="Builds/VisualStudio2015">

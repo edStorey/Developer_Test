@@ -2263,12 +2263,12 @@
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\cap.png" />
-    <None Include="..\..\highlighted-selected@2x.png" />
-    <None Include="..\..\normal@2x.png" />
-    <None Include="..\..\off.png" />
-    <None Include="..\..\on.png" />
-    <None Include="..\..\selected@2x.png" />
+    <None Include="..\..\Images\cap.png" />
+    <None Include="..\..\Images\highlighted-selected@2x.png" />
+    <None Include="..\..\Images\normal@2x.png" />
+    <None Include="..\..\Images\off.png" />
+    <None Include="..\..\Images\on.png" />
+    <None Include="..\..\Images\selected@2x.png" />
     <None Include="..\..\..\juce\modules\juce_audio_formats\codecs\flac\Flac Licence.txt" />
     <None Include="..\..\..\juce\modules\juce_audio_formats\codecs\oggvorbis\Ogg Vorbis Licence.txt" />
     <None Include="..\..\..\juce\modules\juce_graphics\image_formats\jpglib\changes to libjpeg for JUCE.txt" />

@@ -3725,22 +3725,22 @@
     <ClInclude Include="..\..\..\juce\modules\juce_video\juce_video.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\cap.png">
+    <None Include="..\..\Images\cap.png">
       <Filter>Developer_Test</Filter>
     </None>
-    <None Include="..\..\highlighted-selected@2x.png">
+    <None Include="..\..\Images\highlighted-selected@2x.png">
       <Filter>Developer_Test</Filter>
     </None>
-    <None Include="..\..\normal@2x.png">
+    <None Include="..\..\Images\normal@2x.png">
       <Filter>Developer_Test</Filter>
     </None>
-    <None Include="..\..\off.png">
+    <None Include="..\..\Images\off.png">
       <Filter>Developer_Test</Filter>
     </None>
-    <None Include="..\..\on.png">
+    <None Include="..\..\Images\on.png">
       <Filter>Developer_Test</Filter>
     </None>
-    <None Include="..\..\selected@2x.png">
+    <None Include="..\..\Images\selected@2x.png">
       <Filter>Developer_Test</Filter>
     </None>
     <None Include="..\..\..\juce\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">
